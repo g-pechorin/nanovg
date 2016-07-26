@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#ifdef NANOVG_EXAMPLE_GLAD
+#	include <glad/glad.h>
+#endif
 #ifdef NANOVG_GLEW
 #  include <GL/glew.h>
 #endif

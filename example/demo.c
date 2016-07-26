@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#ifdef NANOVG_EXAMPLE_GLAD
+#	include <glad/glad.h>
+#endif
 #ifdef NANOVG_GLEW
 #  include <GL/glew.h>
 #endif
@@ -802,6 +805,10 @@ void drawLines(NVGcontext* vg, float x, float y, float w, float h, float t)
 	nvgRestore(vg);
 }
 
+#ifndef CMAKE_SOURCE_DIR
+#define CMAKE_SOURCE_DIR
+#endif
+
 int loadDemoData(NVGcontext* vg, DemoData* data)
 {
 	int i;
@@ -811,7 +818,7 @@ int loadDemoData(NVGcontext* vg, DemoData* data)
 
 	for (i = 0; i < 12; i++) {
 		char file[128];
-		snprintf(file, 128, "../example/images/image%d.jpg", i+1);
+		snprintf(file, 128, CMAKE_SOURCE_DIR "../example/images/image%d.jpg", i + 1);
 		data->images[i] = nvgCreateImage(vg, file, 0);
 		if (data->images[i] == 0) {
 			printf("Could not load %s.\n", file);
@@ -819,17 +826,17 @@ int loadDemoData(NVGcontext* vg, DemoData* data)
 		}
 	}
 
-	data->fontIcons = nvgCreateFont(vg, "icons", "../example/entypo.ttf");
+	data->fontIcons = nvgCreateFont(vg, "icons", CMAKE_SOURCE_DIR "../example/entypo.ttf");
 	if (data->fontIcons == -1) {
 		printf("Could not add font icons.\n");
 		return -1;
 	}
-	data->fontNormal = nvgCreateFont(vg, "sans", "../example/Roboto-Regular.ttf");
+	data->fontNormal = nvgCreateFont(vg, "sans", CMAKE_SOURCE_DIR "../example/Roboto-Regular.ttf");
 	if (data->fontNormal == -1) {
 		printf("Could not add font italic.\n");
 		return -1;
 	}
-	data->fontBold = nvgCreateFont(vg, "sans-bold", "../example/Roboto-Bold.ttf");
+	data->fontBold = nvgCreateFont(vg, "sans-bold", CMAKE_SOURCE_DIR "../example/Roboto-Bold.ttf");
 	if (data->fontBold == -1) {
 		printf("Could not add font bold.\n");
 		return -1;
@@ -1191,8 +1198,8 @@ static void flipHorizontal(unsigned char* image, int w, int h, int stride)
 {
 	int i = 0, j = h-1, k;
 	while (i < j) {
-		unsigned char* ri = &image[i * stride];		
-		unsigned char* rj = &image[j * stride];		
+		unsigned char* ri = &image[i * stride];
+		unsigned char* rj = &image[j * stride];
 		for (k = 0; k < w*4; k++) {
 			unsigned char t = ri[k];
 			ri[k] = rj[k];
@@ -1217,4 +1224,3 @@ void saveScreenShot(int w, int h, int premult, const char* name)
  	stbi_write_png(name, w, h, 4, image, w*4);
  	free(image);
 }
-

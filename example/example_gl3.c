@@ -17,6 +17,9 @@
 //
 
 #include <stdio.h>
+#ifdef NANOVG_EXAMPLE_GLAD
+#	include <glad/glad.h>
+#endif
 #ifdef NANOVG_GLEW
 #	include <GL/glew.h>
 #endif
@@ -54,6 +57,12 @@ static void key(GLFWwindow* window, int key, int scancode, int action, int mods)
 		premult = !premult;
 }
 
+#ifdef NANOVG_EXAMPLE_GLAD
+static void* loader(const char* name)
+{
+	return glfwGetProcAddress(name);
+}
+#endif
 int main()
 {
 	GLFWwindow* window;
@@ -94,6 +103,14 @@ int main()
 	glfwSetKeyCallback(window, key);
 
 	glfwMakeContextCurrent(window);
+
+#ifdef NANOVG_EXAMPLE_GLAD
+	if(!gladLoadGLLoader(loader)) {
+      printf("Something went wrong!\n");
+      exit(-1);
+	}
+#endif
+
 #ifdef NANOVG_GLEW
 	glewExperimental = GL_TRUE;
 	if(glewInit() != GLEW_OK) {
@@ -109,6 +126,7 @@ int main()
 #else
 	vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES | NVG_DEBUG);
 #endif
+
 	if (vg == NULL) {
 		printf("Could not init nanovg.\n");
 		return -1;
